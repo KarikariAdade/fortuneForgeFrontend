@@ -1,0 +1,41 @@
+<main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
+  <div class="container" style="padding-left: 5%; padding-right: 5%;">
+    <div class="card login-card">
+      <div class="row no-gutters">
+        <div class="col-md-5">
+          <img src="assets/images/login.jpg" alt="login" class="login-card-img">
+        </div>
+        <div class="col-md-7">
+          <div class="card-body">
+            <div class="brand-wrapper">
+              <img src="assets/images/logo.svg" alt="logo" class="logo">
+            </div>
+            <p class="login-card-description">Sign into your account</p>
+            <form class="row" method="POST" [formGroup]="signInForm" (ngSubmit)="submitSignInForm()">
+              <p [class]="messageClass" *ngIf="hasError">{{ errorMessage }}</p>
+              <div class="form-group">
+                <label class="sr-only">Email</label>
+                <input type="email" name="email" formControlName="email" class="form-control" placeholder="Email address">
+                <div class="error" *ngIf="(signInForm.controls['email'].touched || signInForm.controls['email'].dirty) && signInForm.controls['email'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Email Address is required</strong>
+                  <strong class="text-danger" *ngIf="formErrors['email']">Invalid Email Address</strong>
+                </div>
+              </div>
+              <div class="form-group mb-4">
+                <label>Password</label>
+                <input type="password" name="password" formControlName="password" class="form-control" placeholder="">
+                <div class="error" *ngIf="(signInForm.controls['password'].touched || signInForm.controls['password'].dirty) && signInForm.controls['password'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Password is required</strong><br>
+                </div>
+              </div>
+              <button name="login" [disabled]="!signInForm.valid" class="btn btn-block login-btn mb-4" type="submit">Login</button>
+            </form>
+            <a routerLink="/auth/password/forgot" class="forgot-password-link">Forgot password?</a>
+            <p class="login-card-footer-text">Don't have an account? <a routerLink="/auth/signup" class="text-reset">Sign Up here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<!--<router-outlet></router-outlet>-->

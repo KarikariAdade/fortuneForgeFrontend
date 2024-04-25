@@ -1,0 +1,66 @@
+<main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
+  <div class="container" style="padding-left: 5%; padding-right: 5%;">
+    <div class="card login-card">
+      <div class="row no-gutters">
+        <div class="col-md-5">
+          <img src="assets/images/login.jpg" alt="login" class="login-card-img">
+        </div>
+        <div class="col-md-7">
+          <div class="card-body">
+            <div class="brand-wrapper">
+              <img src="assets/images/logo.svg" alt="logo" class="logo">
+            </div>
+            <p class="login-card-description">Create a New Account</p>
+            <form class="row" method="POST" [formGroup]="signUpForm" (ngSubmit)="submitSignUpForm()">
+              <p [class]="messageClass" *ngIf="hasError">{{ errorMessage }}</p>
+              <div class="form-group col-md-6">
+                <label>Name</label>
+                <input type="text" name="name" formControlName="name" class="form-control">
+
+                <div class="error" *ngIf="(signUpForm.controls['name'].touched || signUpForm.controls['name'].dirty) && signUpForm.controls['name'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Name is required</strong>
+                </div>
+              </div>
+              <div class="form-group col-md-6">
+                <label class="sr-only">Email</label>
+                <input type="email" name="email" formControlName="email" class="form-control" placeholder="Email address">
+                <div class="error" *ngIf="(signUpForm.controls['email'].touched || signUpForm.controls['email'].dirty) && signUpForm.controls['email'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Email Address is required</strong><br>
+                  <strong class="text-danger" *ngIf="formErrors['email']">Invalid Email Address</strong>
+                </div>
+              </div>
+              <div class="form-group col-md-8">
+                <label class="sr-only">Phone Number</label>
+                <input type="email" name="phone" formControlName="phone" class="form-control" placeholder="+233000000000">
+                <div class="error" *ngIf="(signUpForm.controls['phone'].touched || signUpForm.controls['phone'].dirty) && signUpForm.controls['phone'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Email Address is required</strong><br>
+                  <strong class="text-danger" *ngIf="formErrors['minLength']">Phone Number too short</strong>
+                </div>
+              </div>
+              <div class="form-group mb-4 col-md-6">
+                <label class="sr-only">Password</label>
+                <input type="password" name="password" class="form-control" formControlName="password" placeholder="***********">
+                <div class="error" *ngIf="(signUpForm.controls['password'].touched || signUpForm.controls['password'].dirty) && signUpForm.controls['password'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Password is required</strong><br>
+                  <strong class="text-danger" *ngIf="formErrors['minLength']">Password too short</strong><br>
+                  <strong class="text-danger" *ngIf="signUpForm.hasError('passwordMismatch')">Passwords Do not match</strong>
+                </div>
+
+              </div>
+              <div class="form-group mb-4 col-md-6">
+                <label class="sr-only">Confirm Password</label>
+                <input type="password" name="password" formControlName="password_confirmation" class="form-control" placeholder="***********">
+                <div class="error" *ngIf="(signUpForm.controls['password_confirmation'].touched || signUpForm.controls['password_confirmation'].dirty) && signUpForm.controls['password'].errors as formErrors">
+                  <strong class="text-danger" *ngIf="formErrors['required']">Password Confirmation field is required</strong><br>
+                  <strong class="text-danger" *ngIf="signUpForm.hasError('passwordMismatch')">Passwords Do not match</strong>
+                </div>
+              </div>
+              <button name="login" id="login" class="btn btn-block login-btn mb-4" [disabled]="!signUpForm.valid" type="submit">Sign Up</button>
+            </form>
+            <p class="login-card-footer-text">Already have an account? <a routerLink="/auth/signin" class="text-reset">Sign In here</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

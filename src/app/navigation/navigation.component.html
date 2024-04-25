@@ -1,0 +1,30 @@
+<nav class="navbar">
+  <ul class="navbar__menu">
+    <li class="navbar__item">
+      <a routerLink="/" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Home</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/budget" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Budget</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/expenses" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Expenses</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/income" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Income</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/savings" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Savings</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/reminders" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Reminders</span></a>
+    </li>
+    <li class="navbar__item">
+      <a routerLink="/transactions" class="navbar__link"><fa-icon [icon]="faHome" size="xl"></fa-icon><span>Transactions</span></a>
+      <i data-feather="arrow-down-left"></i>
+    </li>
+    <li class="navbar__item">
+      <a (click)="signOut()" class="navbar__link"><fa-icon [icon]="faPowerOff" size="xl"></fa-icon><span>Sign Out</span></a>
+      <i data-feather="arrow-down-left"></i>
+    </li>
+  </ul>
+</nav>
