@@ -29,6 +29,17 @@ export class AuthService {
     return this.http.post(this.base_url + 'auth/logout', null)
   }
 
+  forgotPassword(data: User): Observable<any> {
+    console.log(data)
+    return this.http.post(this.base_url + 'auth/password/forgot', {'email': data.email})
+  }
+
+  resetPassword(data:any): Observable<any> {
+    console.log('observable', data)
+    return this.http.post(this.base_url + 'auth/password/reset', {'password': data.password, 'token': data.token})
+  }
+
+
   getErrors(errors: any){
     let keys = Object.keys(errors.error),
       firstKey = keys[0];

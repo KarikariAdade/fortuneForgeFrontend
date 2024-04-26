@@ -18,7 +18,7 @@ export const routes: Routes = [
       {path: 'signup', component: SignupComponent},
       {path: 'signin', component: SigninComponent},
       {path: 'password/forgot', component: PasswordForgotComponent},
-      {path: 'password/reset', component: PasswordResetComponent}
+      {path: 'password/reset/:token', component: PasswordResetComponent}
     ]},
   {path: '', component: HomeComponent, canActivate:[AuthGuard]},
   {path: 'budget', component: BudgetComponent, canActivate:[AuthGuard]},
