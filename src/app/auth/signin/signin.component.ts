@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Renderer2} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
@@ -23,8 +23,10 @@ export class SigninComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private renderer: Renderer2
   ) {
+    this.renderer.removeStyle(document.body, 'background-image')
   }
 
   signInForm: FormGroup = new FormGroup({});
@@ -56,7 +58,6 @@ export class SigninComponent implements OnInit {
           this.messageClass = 'alert alert-danger';
 
           this.errorMessage = errors.error.message;
-          console.log(errors, 'new', errors.error.message);
         })
       })
   }

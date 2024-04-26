@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import {faHomeLg, faPowerOff} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
-import {Router, RouterLink} from "@angular/router";
+import {Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {AuthService} from "../services/auth.service";
 import {User} from "../interfaces/user";
 
 @Component({
   selector: 'app-navigation',
   standalone: true,
-  imports: [FontAwesomeModule, RouterLink],
+  imports: [FontAwesomeModule, RouterLink, RouterLinkActive],
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.css'
 })

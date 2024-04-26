@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Renderer2} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from "@angular/router";
 import {Form, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgIf} from "@angular/common";
@@ -24,8 +24,10 @@ export class SignupComponent implements OnInit {
     private formBuilder: FormBuilder,
     private http: HttpClient,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) {
+    this.renderer.removeStyle(document.body, 'background-image')
   }
 
   signUpForm: FormGroup = new FormGroup({});

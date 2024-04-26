@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Renderer2} from '@angular/core';
 import {NgIf} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {RouterLink} from "@angular/router";
@@ -20,7 +20,8 @@ import {error} from "@angular/compiler-cli/src/transformers/util";
 })
 export class PasswordForgotComponent implements OnInit{
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService) {
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private renderer: Renderer2) {
+    this.renderer.removeStyle(document.body, 'background-image')
   }
 
   forgotPasswordForm: FormGroup = new FormGroup<any>({})

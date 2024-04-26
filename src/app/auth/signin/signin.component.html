@@ -1,40 +1,84 @@
-<main class="d-flex align-items-center min-vh-100 py-3 py-md-0">
-  <div class="container" style="padding-left: 5%; padding-right: 5%;">
-    <div class="card login-card">
-      <div class="row no-gutters">
-        <div class="col-md-5">
-          <img src="assets/images/login.jpg" alt="login" class="login-card-img">
-        </div>
-        <div class="col-md-7">
-          <div class="card-body">
-            <div class="brand-wrapper">
-              <img src="assets/images/logo.svg" alt="logo" class="logo">
-            </div>
-            <p class="login-card-description">Sign into your account</p>
-            <form class="row" method="POST" [formGroup]="signInForm" (ngSubmit)="submitSignInForm()">
-              <p [class]="messageClass" *ngIf="hasError">{{ errorMessage }}</p>
-              <div class="form-group">
-                <label class="sr-only">Email</label>
-                <input type="email" name="email" formControlName="email" class="form-control" placeholder="Email address">
-                <div class="error" *ngIf="(signInForm.controls['email'].touched || signInForm.controls['email'].dirty) && signInForm.controls['email'].errors as formErrors">
-                  <strong class="text-danger" *ngIf="formErrors['required']">Email Address is required</strong>
-                  <strong class="text-danger" *ngIf="formErrors['email']">Invalid Email Address</strong>
-                </div>
-              </div>
-              <div class="form-group mb-4">
-                <label>Password</label>
-                <input type="password" name="password" formControlName="password" class="form-control" placeholder="">
-                <div class="error" *ngIf="(signInForm.controls['password'].touched || signInForm.controls['password'].dirty) && signInForm.controls['password'].errors as formErrors">
-                  <strong class="text-danger" *ngIf="formErrors['required']">Password is required</strong><br>
-                </div>
-              </div>
-              <button name="login" [disabled]="!signInForm.valid" class="btn btn-block login-btn mb-4" type="submit">Login</button>
-            </form>
-            <a routerLink="/auth/password/forgot" class="forgot-password-link">Forgot password?</a>
-            <p class="login-card-footer-text">Don't have an account? <a routerLink="/auth/signup" class="text-reset">Sign Up here</a></p>
+<div class="d-flex flex-column flex-root">
+  <!--begin::Authentication - Sign-in -->
+  <div class="d-flex flex-column flex-column-fluid bgi-position-y-bottom position-x-center bgi-no-repeat bgi-size-contain bgi-attachment-fixed"
+       style="background-image: url('assets/media/illustrations/dozzy-1/14.png')">
+    <!--begin::Content-->
+    <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20" style="margin-top: 5%;margin-bottom: 5%;">
+      <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+        <!--begin::Form-->
+        <form class="form w-100 fv-plugins-bootstrap5 fv-plugins-framework" method="POST" [formGroup]="signInForm" (ngSubmit)="submitSignInForm()">
+          <!--begin::Heading-->
+          <div class="text-center mb-10">
+            <!--begin::Title-->
+            <h1 class="text-dark mb-3">Sign In to Fortune Forge</h1>
+            <!--end::Title-->
+            <!--begin::Link-->
+            <div class="text-gray-400 fw-bold fs-4">New Here?
+              <a routerLink="/auth/signup" class="link-primary fw-bolder">Create an Account</a></div>
+            <!--end::Link-->
           </div>
-        </div>
+          <!--begin::Heading-->
+          <!--begin::Input group-->
+          <div class="fv-row mb-10 fv-plugins-icon-container">
+            <p [class]="messageClass" *ngIf="hasError">{{ errorMessage }}</p>
+            <!--begin::Label-->
+            <label class="form-label fs-6 fw-bolder text-dark">Email</label>
+            <!--end::Label-->
+            <!--begin::Input-->
+            <input class="form-control form-control-lg form-control-solid" type="email" formControlName="email" name="email" autocomplete="on">
+            </div>
+          <div class="error" *ngIf="(signInForm.controls['email'].touched || signInForm.controls['email'].dirty) && signInForm.controls['email'].errors as formErrors">
+            <strong class="text-danger" *ngIf="formErrors['required']">Email Address is required</strong>
+            <strong class="text-danger" *ngIf="formErrors['email']">Invalid Email Address</strong>
+          </div>
+          <!--end::Input group-->
+          <!--begin::Input group-->
+          <div class="fv-row mb-10 mt-4">
+            <!--begin::Wrapper-->
+            <div class="d-flex flex-stack mb-2">
+              <!--begin::Label-->
+              <label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
+              <!--end::Label-->
+              <!--begin::Link-->
+              <a routerLink="/auth/password/forgot" class="link-primary fs-6 fw-bolder">Forgot Password ?</a>
+              <!--end::Link-->
+            </div>
+            <!--end::Wrapper-->
+            <!--begin::Input-->
+            <input class="form-control form-control-lg form-control-solid" type="password" formControlName="password" name="password" autocomplete="off">
+          </div>
+            <!--end::Input-->
+            <div class="error" *ngIf="(signInForm.controls['password'].touched || signInForm.controls['password'].dirty) && signInForm.controls['password'].errors as formErrors">
+              <strong class="text-danger" *ngIf="formErrors['required']">Password is required</strong><br>
+            </div>
+          <!--begin::Actions-->
+          <div class="text-center mt-4">
+            <!--begin::Submit button-->
+            <button type="submit" [disabled]="!signInForm.valid" class="btn btn-lg btn-primary w-100 mb-5">
+              Sign In
+            </button>
+            <!--end::Submit button-->
+            <!--begin::Separator-->
+            <div class="text-center text-muted text-uppercase fw-bolder mb-5">or</div>
+            <!--end::Separator-->
+            <!--begin::Google link-->
+            <a href="" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">
+              <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3">Continue with Google</a>
+            <!--end::Google link-->
+            <!--begin::Google link-->
+            <a href="" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">
+              <img alt="Logo" src="assets/media/svg/brand-logos/facebook-4.svg" class="h-20px me-3">Continue with Facebook</a>
+            <!--end::Google link-->
+            <!--end::Google link-->
+          </div>
+        </form>
+        <!--end::Form-->
       </div>
+      <!--end::Wrapper-->
     </div>
+    <!--end::Content-->
+    <!--begin::Footer-->
+    <!--end::Footer-->
   </div>
-</main>
+  <!--end::Authentication - Sign-in-->
+</div>
