@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import {faHomeLg, faPowerOff} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {Router, RouterLink, RouterLinkActive} from "@angular/router";
-import {AuthService} from "../services/auth.service";
-import {User} from "../interfaces/user";
+import {AuthService} from "../../services/auth.service";
+import {User} from "../../interfaces/user";
 
 @Component({
   selector: 'app-navigation',

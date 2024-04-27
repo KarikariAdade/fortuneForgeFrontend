@@ -12,6 +12,7 @@ import {SignupComponent} from "./auth/signup/signup.component";
 import {AuthGuard} from "./guards/auth.guard";
 import {PasswordForgotComponent} from "./auth/password-forgot/password-forgot.component";
 import {PasswordResetComponent} from "./auth/password-reset/password-reset.component";
+import {IncomeTrackerCategoriesComponent} from "./income/categories/income-tracker-categories.component";
 
 export const routes: Routes = [
   {path: 'auth', children: [
@@ -23,7 +24,10 @@ export const routes: Routes = [
   {path: '', component: HomeComponent, canActivate:[AuthGuard]},
   {path: 'budget', component: BudgetComponent, canActivate:[AuthGuard]},
   {path: 'expenses', component: ExpenseComponent, canActivate:[AuthGuard]},
-  {path: 'income', component: IncomeTrackerComponent, canActivate:[AuthGuard]},
+  {path: 'income', children: [
+      {path: '', component: IncomeTrackerComponent},
+      {path: 'categories', component: IncomeTrackerCategoriesComponent}
+    ], canActivate:[AuthGuard]},
   {path: 'reminders', component: ReminderComponent, canActivate:[AuthGuard]},
   {path: 'savings', component: SavingsComponent, canActivate:[AuthGuard]},
   {path: 'transactions', component: TransactionComponent, canActivate:[AuthGuard]},

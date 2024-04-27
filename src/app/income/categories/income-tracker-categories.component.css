@@ -1,0 +1,4 @@
+.addCategoryToggle{
+  opacity: 1;
+  transition:5s opacity ease-in-out;
+}

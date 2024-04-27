@@ -70,4 +70,8 @@ export class AuthService {
   setUserData(data:object):void {
     localStorage.setItem('user', JSON.stringify(data));
   }
+
+  getUserData(){
+    return localStorage.getItem('user');
+  }
 }

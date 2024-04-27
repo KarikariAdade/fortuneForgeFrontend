@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
-import {ErrorMessageComponent} from "../../error-message/error-message.component";
+import {ErrorMessageComponent} from "../../layouts/error-message/error-message.component";
 import {NgIf} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {PasswordMatchValidator} from "../../configurations/PasswordConfirmation";

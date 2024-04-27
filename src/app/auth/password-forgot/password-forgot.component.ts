@@ -2,7 +2,7 @@ import {Component, OnInit, Renderer2} from '@angular/core';
 import {NgIf} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {RouterLink} from "@angular/router";
-import {ErrorMessageComponent} from "../../error-message/error-message.component";
+import {ErrorMessageComponent} from "../../layouts/error-message/error-message.component";
 import {AuthService} from "../../services/auth.service";
 import {error} from "@angular/compiler-cli/src/transformers/util";
 

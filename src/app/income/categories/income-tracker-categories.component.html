@@ -1,0 +1,35 @@
+<app-navigation></app-navigation>
+<app-home-header [buttonLink]="incomeLink" [buttonName]="incomeButtonName" [pageName]="pageName"></app-home-header>
+<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+  <div class="content flex-row-fluid" id="kt_content">
+    <div class="card card-page">
+      <div class="card-body">
+
+        <div class="row">
+          <div class="col-md-10">
+            <form [formGroup]="addIncomeCategoryForm" method="POST" *ngIf="addCategoryToggle">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="required form-label">Name</label>
+                      <input type="email" class="form-control" placeholder="Income Category Name"/>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description"></textarea>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary shadow-lg {{applyMarginTop}}" (click)="toggleForm()"><fa-icon [icon]="faPlusCircle"></fa-icon> Add Category</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
