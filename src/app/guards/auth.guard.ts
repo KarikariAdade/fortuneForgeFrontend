@@ -10,7 +10,28 @@ export const AuthGuard: CanActivateFn = (
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return true;
+
+    const tokenParts:any = authService.getToken()?.split('.');
+
+    if (tokenParts.length === 3) {
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const expirationDate: number = payload.exp * 1000;
+      const currentTime: number = new Date().getTime();
+
+      if (expirationDate < currentTime) {
+
+        return router.createUrlTree(['/auth/signin']);
+
+      }else{
+
+        return true;
+
+      }
+
+    } else {
+      return router.createUrlTree(['/auth/signin']);
+    }
+
   }else{
     return router.createUrlTree(['/auth/signin']);
   }

@@ -45,6 +45,10 @@ export class SigninComponent implements OnInit {
 
             delete response.data.password
 
+            this.authService.removeToken()
+
+            this.authService.removeUserData();
+
             this.authService.setToken(response.token)
 
             this.authService.setUserData(response.data)

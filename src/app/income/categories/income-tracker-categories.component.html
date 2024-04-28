@@ -29,6 +29,23 @@
           </div>
         </div>
 
+        <button (click)="pushDataToRow()">Load Data</button>
+        <button (click)="deleteDataFromRow()">Remove Selected Data</button>
+
+        <div>
+          <ag-grid-angular
+            class="ag-theme-quartz"
+            style="height: 400px;"
+            [pagination]="true"
+            [rowData]="rowData"
+            [rowStyle]="rowStyle"
+            [getRowId]="getRowId"
+            [rowHeight]="50"
+            [rowSelection]="rowSelection"
+            (gridReady)="onGridReady($event)"
+            [columnDefs]="colDefs">
+          </ag-grid-angular>
+        </div>
       </div>
     </div>
   </div>

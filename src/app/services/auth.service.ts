@@ -25,6 +25,7 @@ export class AuthService {
   }
 
   logoutUser(): Observable<any> {
+    this.removeUserData()
     localStorage.removeItem(this.tokenKey);
     return this.http.post(this.base_url + 'auth/logout', null)
   }
@@ -59,6 +60,10 @@ export class AuthService {
 
   removeToken(): void {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  removeUserData(): void {
+    localStorage.removeItem('user');
   }
 
   isAuthenticated() {
