@@ -7,19 +7,29 @@
 
         <div class="row">
           <div class="col-md-10">
-            <form [formGroup]="addIncomeCategoryForm" method="POST" *ngIf="addCategoryToggle">
+            <form [formGroup]="addIncomeCategoryForm" (ngSubmit)="submitIncomeCategoryForm()" method="POST" *ngIf="addCategoryToggle">
+              <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <div class="form-group">
                       <label class="required form-label">Name</label>
-                      <input type="email" class="form-control" placeholder="Income Category Name"/>
+                      <input type="email" formControlName="name" class="form-control" placeholder="Income Category Name"/>
+                    <div class="error mt-2" *ngIf="(addIncomeCategoryForm.controls['name'].touched || addIncomeCategoryForm.controls['name'].dirty) && addIncomeCategoryForm.controls['name'].errors as formErrors">
+                      <strong class="text-danger" *ngIf="formErrors['required']">Category Name is required</strong><br>
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Description</label>
-                    <textarea class="form-control" name="description"></textarea>
+                    <textarea class="form-control" formControlName="description" name="description"></textarea>
                   </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <button class="btn btn-success shadow-lg mt-9">Submit New Category</button>
+                  </div>
+
                 </div>
               </div>
             </form>
@@ -29,9 +39,12 @@
           </div>
         </div>
 
-        <button (click)="pushDataToRow()">Load Data</button>
-        <button (click)="deleteDataFromRow()">Remove Selected Data</button>
+        <div class="mb-5 mt-5">
+          <button class="btn btn-primary shadow-lg mg-right-4" (click)="pushDataToRow()">Load Data</button>
+          <button class="btn btn-danger shadow-lg mg-right-4" (click)="deleteDataFromRow()">Remove Selected Data</button>
+          <button class="btn btn-info shadow-lg" (click)="onBtnExport()"><fa-icon [icon]="faCloudDownloadAlt"></fa-icon> Export Data</button>
 
+        </div>
         <div>
           <ag-grid-angular
             class="ag-theme-quartz"

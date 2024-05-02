@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {NavigationComponent} from "../../layouts/navigation/navigation.component";
 import {HomeHeaderComponent} from "../../layouts/home-header/home-header.component";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+import {faCloudDownloadAlt, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
 import {NgIf} from "@angular/common";
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import { AgGridAngular } from 'ag-grid-angular'; // AG Grid Component
 import { ColDef, CsvExportModule, GridApi, GridReadyEvent, GridOptions, GetRowIdParams, GetRowIdFunc } from 'ag-grid-community';
@@ -12,6 +12,7 @@ import {IncomeService} from "../../services/income/income.service";
 import {User} from "../../interfaces/user";
 import {IncomeCategory} from "../../interfaces/income-category";
 import {ActionButtonsComponent} from "../../layouts/action-buttons/action-buttons.component";
+import {ErrorMessageComponent} from "../../layouts/error-message/error-message.component";
 
 
 @Component({
@@ -24,6 +25,7 @@ import {ActionButtonsComponent} from "../../layouts/action-buttons/action-button
     NgIf,
     ReactiveFormsModule,
     AgGridAngular,
+    ErrorMessageComponent,
   ],
   templateUrl: './income-tracker-categories.component.html',
   styleUrl: './income-tracker-categories.component.css'
@@ -42,6 +44,12 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
 
   addCategoryToggle: boolean = false;
 
+  hasError = false;
+
+  errorMessage: string = '';
+
+  messageClass: string = '';
+
   private gridApi!: GridApi;
 
   protected readonly faPlusCircle = faPlusCircle;
@@ -57,11 +65,6 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
   public getRowId: GetRowIdFunc = (params: GetRowIdParams) => {
     return params.data.id;
   };
-
-  toggleForm() {
-    this.applyMarginTop = !this.addCategoryToggle ? 'mt-9' : '';
-    this.addCategoryToggle = !this.addCategoryToggle
-  }
 
   rowStyle = {width: '1180px'}
 
@@ -79,6 +82,10 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.addIncomeCategoryForm = this.formBuilder.group({
+      'name': new FormControl('', [Validators.required]),
+      'description': new FormControl(''),
+    })
 
     this.incomeService.getUserCategories(Number(this.userData.id)).subscribe({
       next: response => {
@@ -102,10 +109,11 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
       }
     })
 
+  }
 
-
-
-    console.log(this.userData, typeof(this.userData))
+  toggleForm(){
+    this.applyMarginTop = !this.addCategoryToggle ? 'mt-9' : '';
+    this.addCategoryToggle = !this.addCategoryToggle
   }
 
   onGridReady(params: GridReadyEvent<IncomeCategory>) {
@@ -149,5 +157,28 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
     console.log('rowdata after filter', this.rowData.length, this.rowData)
 
     this.gridApi.setGridOption("rowData", this.rowData);
+  }
+
+  protected readonly faCloudDownloadAlt = faCloudDownloadAlt;
+
+
+  submitIncomeCategoryForm() {
+    this.incomeService.addIncomeCategory(this.addIncomeCategoryForm.value).subscribe({
+      next: data => {
+        console.log('income category success fresponse', data)
+        this.hasError = true;
+        this.messageClass = 'alert alert-success';
+        this.errorMessage = data.message;
+      },
+      error: errors => {
+        console.log('income category error response', errors)
+        this.hasError = true;
+
+        this.messageClass = 'alert alert-danger';
+
+        this.errorMessage = this.authService.getErrors(errors)
+      }
+    })
+    console.log(this.addIncomeCategoryForm.value)
   }
 }

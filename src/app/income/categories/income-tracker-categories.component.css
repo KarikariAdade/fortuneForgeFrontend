@@ -2,3 +2,7 @@
   opacity: 1;
   transition:5s opacity ease-in-out;
 }
+
+.mg-right-4 {
+  margin-right: 20px !important;
+}

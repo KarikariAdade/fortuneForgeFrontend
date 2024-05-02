@@ -1,0 +1,12 @@
+<ag-grid-angular
+  class="ag-theme-quartz"
+  style="height: 400px;"
+  [pagination]="true"
+  [rowData]="rowData"
+  [rowStyle]="rowStyle"
+  [getRowId]="getRowId"
+  [rowHeight]="50"
+  [rowSelection]="rowSelection"
+  (gridReady)="onGridReady($event)"
+  [columnDefs]="colDefs">
+</ag-grid-angular>

@@ -1,9 +1,9 @@
 export interface IncomeCategory {
 
-  id: number;
+  id?: number;
 
-  name: string;
+  name?: string;
 
-  description: string;
+  description?: string;
 
 }
