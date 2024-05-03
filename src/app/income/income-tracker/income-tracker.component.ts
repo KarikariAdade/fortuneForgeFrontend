@@ -9,6 +9,10 @@ import {IncomeCategory} from "../../interfaces/income-category";
 import {IncomeService} from "../../services/income/income.service";
 import {AuthService} from "../../services/auth.service";
 import {User} from "../../interfaces/user";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {NgForOf, NgIf} from "@angular/common";
+import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-income-tracker',
@@ -17,23 +21,37 @@ import {User} from "../../interfaces/user";
     NavigationComponent,
     HomeHeaderComponent,
     RouterLink,
-    DatatableComponent
+    DatatableComponent,
+    ReactiveFormsModule,
+    NgForOf,
+    FaIconComponent,
+    NgIf
   ],
   templateUrl: './income-tracker.component.html',
   styleUrl: './income-tracker.component.css'
 })
 export class IncomeTrackerComponent implements OnInit{
 
-  constructor(private incomeService: IncomeService, private authService: AuthService) {
+  constructor(
+    private incomeService: IncomeService,
+    private authService: AuthService,
+    private formBuilder: FormBuilder,
+  ) {
   }
 
   categoryLink = '/income/categories';
 
   categoryButtonName = 'Income Categories';
+
   pageName: string = 'Income Tracker';
 
   userData: User = JSON.parse(`${this.authService.getUserData()}`);
 
+  incomeAddForm: FormGroup = new FormGroup({})
+
+  incomeCategories:IncomeCategory[] = [];
+
+  addCategoryToggle: boolean = false;
 
   rowData: any[] = [
 
@@ -47,13 +65,25 @@ export class IncomeTrackerComponent implements OnInit{
   ];
 
   ngOnInit(): void {
-    this.incomeService.getUserCategories(Number(this.userData.id)).subscribe({
+
+    this.incomeAddForm = this.formBuilder.group({
+      'name': new FormControl('', [Validators.required]),
+      'amount': new FormControl('', [Validators.required, Validators.min(1)]),
+      'startDate': new FormControl('', [Validators.required]),
+      'endDate': new FormControl('', [Validators.required]),
+      'incomeCategory': new FormControl('', [Validators.required]),
+      'isRecurring': new FormControl('',),
+      'description': new FormControl('', [Validators.required]),
+    })
+
+    this.incomeService.getUserCategories().subscribe({
       next: response => {
         console.log('category response', response);
 
         if (response.data && Object.keys(response.data).length !== 0) {
 
-          this.rowData = response.data.map((category: IncomeCategory) => {
+
+          this.incomeCategories = response.data.map((category: IncomeCategory) => {
             return {
               name: category.name,
               description: category.description,
@@ -68,7 +98,6 @@ export class IncomeTrackerComponent implements OnInit{
         console.log('category error', errors);
       }
     })
-
   }
 
   // pushDataToRow() {
@@ -104,4 +133,10 @@ export class IncomeTrackerComponent implements OnInit{
     return function () {
     };
   }
+
+  toggleForm(){
+    this.addCategoryToggle = !this.addCategoryToggle
+  }
+
+  protected readonly faPlusCircle = faPlusCircle;
 }

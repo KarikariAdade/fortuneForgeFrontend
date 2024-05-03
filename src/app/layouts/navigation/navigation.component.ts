@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {faHomeLg, faPowerOff} from "@fortawesome/free-solid-svg-icons";
+import {faHomeLg, faPlusCircle, faPowerOff} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
@@ -24,8 +24,8 @@ export class NavigationComponent {
   signOut() {
     this.authService.logoutUser().subscribe({
       next: () => {
-        localStorage.removeItem('user_data');
-        localStorage.removeItem('token');
+        this.authService.removeToken()
+        this.authService.removeUserData()
         this.router.navigate(['/auth/signin']);
       },
       error: errors => {
@@ -33,4 +33,6 @@ export class NavigationComponent {
       }
     })
   }
+
+  protected readonly faPlusCircle = faPlusCircle;
 }

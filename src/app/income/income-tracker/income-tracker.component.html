@@ -1,10 +1,69 @@
 <app-navigation></app-navigation>
 <app-home-header [buttonLink]="categoryLink" [buttonName]="categoryButtonName" [pageName]="pageName"></app-home-header>
-<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+<div class="d-flex flex-column-fluid align-items-start container-xxl">
   <div class="content flex-row-fluid" id="kt_content">
     <div class="card card-page">
       <div class="card-body">
-        <h2>Hello world</h2>
+        <div class="mb-5" style="text-align: right;">
+          <button class="btn btn-primary shadow-lg" (click)="toggleForm()"><fa-icon [icon]="faPlusCircle"></fa-icon> Add Income</button>
+        </div>
+        <div class="row mb-10" *ngIf="addCategoryToggle">
+          <h2 class="text-center">Add Income</h2>
+          <form class="row" method="POST" [formGroup]="incomeAddForm">
+            <div class="col-md-4">
+              <label>Name <strong class="text-danger">*</strong></label>
+              <input type="text" formControlName="name" class="form-control">
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['name'].touched || incomeAddForm.controls['name'].dirty) && incomeAddForm.controls['name'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Name is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Amount <strong class="text-danger">*</strong></label>
+              <input type="number" step="0.01" formControlName="amount" class="form-control">
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['amount'].touched || incomeAddForm.controls['amount'].dirty) && incomeAddForm.controls['amount'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Amount is required</strong><br>
+                <strong class="text-danger" *ngIf="formErrors['min']">Amount too small</strong>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Income Category <strong class="text-danger">*</strong></label>
+              <select class="form-control" name="income_category" formControlName="incomeCategory">
+                <option value="">Select Income Category</option>
+                <option *ngFor="let category of incomeCategories" [value]="category.id">{{category.name}}</option>
+              </select>
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['incomeCategory'].touched || incomeAddForm.controls['incomeCategory'].dirty) && incomeAddForm.controls['incomeCategory'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Category is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Start Date <strong class="text-danger">*</strong></label>
+              <input type="date"  class="form-control" formControlName="startDate">
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['startDate'].touched || incomeAddForm.controls['startDate'].dirty) && incomeAddForm.controls['startDate'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Start Date is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>End Date <strong class="text-danger">*</strong></label>
+              <input type="date" class="form-control" formControlName="endDate">
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['endDate'].touched || incomeAddForm.controls['endDate'].dirty) && incomeAddForm.controls['endDate'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">End Date is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Is Recurring Income? <strong class="text-danger">*</strong></label>
+              <select class="form-control" formControlName="isRecurring">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['isRecurring'].touched || incomeAddForm.controls['isRecurring'].dirty) && incomeAddForm.controls['isRecurring'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Name is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-12 mt-5 text-center mb-5">
+              <button [disabled]="!incomeAddForm.valid" class="btn btn-success shadow-lg"><fa-icon [icon]="faPlusCircle"></fa-icon> Submit Income </button>
+            </div>
+          </form>
+        </div>
         <app-datatable [rowData]="rowData" [colDefs]="colDefs" [onPushDataToRow]="onPushDataToRow()" [onDeleteDataFromRow]="onDeleteDataFromRow()"></app-datatable>
       </div>
     </div>

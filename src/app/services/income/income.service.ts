@@ -15,13 +15,15 @@ export class IncomeService {
 
   base_url:string  = environment.base_url
 
-  category_base_url: string =  `${this.base_url}income/categories/`
+  access_token: string | null = localStorage.getItem('token')
 
-  getUserCategories(userId: number):Observable<any> {
+  category_base_url: string =  `${this.base_url}income/categories`
 
-    console.log(`${this.base_url}income/categories`)
+  getUserCategories():Observable<any> {
 
-    return this.http.post(`${this.category_base_url}`, {'userId': userId});
+    console.log(`${this.base_url}income/categories`, this.category_base_url)
+
+    return this.http.post(`${this.category_base_url}`, {}, {headers: {'Authorization': `Bearer ${this.access_token}`}});
 
   }
 

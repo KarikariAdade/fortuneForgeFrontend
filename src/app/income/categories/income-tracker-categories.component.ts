@@ -87,22 +87,22 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
       'description': new FormControl(''),
     })
 
-    this.incomeService.getUserCategories(Number(this.userData.id)).subscribe({
+    this.incomeService.getUserCategories().subscribe({
       next: response => {
         console.log('category response', response);
 
-        if (response.data && Object.keys(response.data).length !== 0) {
-
-          this.rowData = response.data.map((category: IncomeCategory) => {
-            return {
-              name: category.name,
-              description: category.description,
-              id: category.id
-
-            }
-          })
-
-        }
+        // if (response.data && Object.keys(response.data).length !== 0) {
+        //
+        //   this.rowData = response.data.map((category: IncomeCategory) => {
+        //     return {
+        //       name: category.name,
+        //       description: category.description,
+        //       id: category.id
+        //
+        //     }
+        //   })
+        //
+        // }
       },
       error: errors => {
         console.log('category error', errors);
