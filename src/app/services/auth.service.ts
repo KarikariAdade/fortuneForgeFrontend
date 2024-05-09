@@ -21,12 +21,16 @@ export class AuthService {
   }
 
   loginUser(data:User): Observable<any> {
+    this.removeToken()
+
+    this.removeUserData();
+
     return this.http.post(this.base_url + 'auth/login', data);
   }
 
   logoutUser(): Observable<any> {
     this.removeUserData()
-    localStorage.removeItem(this.tokenKey);
+    this.removeToken()
     return this.http.post(this.base_url + 'auth/logout', null)
   }
 

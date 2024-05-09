@@ -9,7 +9,8 @@
         </div>
         <div class="row mb-10" *ngIf="addCategoryToggle">
           <h2 class="text-center">Add Income</h2>
-          <form class="row" method="POST" [formGroup]="incomeAddForm">
+          <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
+          <form class="row" method="POST" [formGroup]="incomeAddForm" (submit)="addIncome()">
             <div class="col-md-4">
               <label>Name <strong class="text-danger">*</strong></label>
               <input type="text" formControlName="name" class="form-control">
@@ -60,11 +61,36 @@
               </div>
             </div>
             <div class="col-md-12 mt-5 text-center mb-5">
-              <button [disabled]="!incomeAddForm.valid" class="btn btn-success shadow-lg"><fa-icon [icon]="faPlusCircle"></fa-icon> Submit Income </button>
+              <button class="btn btn-success shadow-lg"><fa-icon [icon]="faPlusCircle"></fa-icon> Submit Income </button>
             </div>
           </form>
         </div>
-        <app-datatable [rowData]="rowData" [colDefs]="colDefs" [onPushDataToRow]="onPushDataToRow()" [onDeleteDataFromRow]="onDeleteDataFromRow()"></app-datatable>
+
+        <div class="mat-elevation-z8">
+          <table mat-table class="full-width-table" matSort aria-label="Income">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+              <td mat-cell *matCellDef="let row">{{row.id}}</td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+              <td mat-cell *matCellDef="let row">{{row.name}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <mat-paginator #paginator
+                         [length]="dataSource.data.length"
+                         [pageIndex]="0"
+                         [pageSize]="10"
+                         [pageSizeOptions]="[5, 10, 20, 50]"
+                         aria-label="Select page">
+          </mat-paginator>
+        </div>
       </div>
     </div>
   </div>

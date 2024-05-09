@@ -91,18 +91,18 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
       next: response => {
         console.log('category response', response);
 
-        // if (response.data && Object.keys(response.data).length !== 0) {
-        //
-        //   this.rowData = response.data.map((category: IncomeCategory) => {
-        //     return {
-        //       name: category.name,
-        //       description: category.description,
-        //       id: category.id
-        //
-        //     }
-        //   })
-        //
-        // }
+        if (response.data && Object.keys(response.data).length !== 0) {
+
+          this.rowData = response.data.map((category: IncomeCategory) => {
+            return {
+              name: category.name,
+              description: category.description,
+              id: category.id
+
+            }
+          })
+
+        }
       },
       error: errors => {
         console.log('category error', errors);
@@ -117,6 +117,8 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
   }
 
   onGridReady(params: GridReadyEvent<IncomeCategory>) {
+    console.log('GridReady', params);
+
     this.gridApi = params.api;
   }
 

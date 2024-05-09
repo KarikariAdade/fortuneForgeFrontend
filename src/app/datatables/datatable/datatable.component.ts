@@ -20,7 +20,9 @@ export class DatatableComponent implements OnInit{
 
   constructor(private incomeService: IncomeService, private authService: AuthService) { }
 
-  private gridApi!: GridApi;
+  @Input()
+  gridApi!: GridApi;
+
   public rowSelection: "single" | "multiple" = "multiple";
 
   public getRowId: GetRowIdFunc = (params: GetRowIdParams) => {
@@ -40,7 +42,7 @@ export class DatatableComponent implements OnInit{
   public colDefs: ColDef[] = []
 
   @Input()
-  onPushDataToRow!: () => void
+  onPushDataToRow!: (data: any) => void
 
   @Input()
   onDeleteDataFromRow!: () => void
@@ -49,9 +51,8 @@ export class DatatableComponent implements OnInit{
 
   }
 
-  onGridReady(params: GridReadyEvent<IncomeCategory>) {
-    this.gridApi = params.api;
-  }
+  @Input()
+  onGridReady!: (params:GridReadyEvent<any>) => void
 
 
   onBtnExport() {
