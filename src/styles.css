@@ -28,9 +28,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .mat-mdc-row:hover .mat-mdc-cell {
-  border-color: currentColor;
-  background-color: rgba(0, 0, 0, 0.4);
-  color: white;
+  /*border-color: currentColor;*/
+  /*background-color: rgba(0, 0, 0, 0.4);*/
+  /*color: white;*/
 }
 
 .demo-row-is-clicked {

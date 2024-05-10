@@ -39,7 +39,13 @@ export class IncomeService {
   }
 
   addIncome(data: Income): Observable<any> {
+    console.log('adding income', data)
     return this.http.post<Income>(`${this.base_url}income/store`, data, {headers: {'Authorization': `Bearer ${this.access_token}`}});
+  }
+
+  updateIncome(data: Income): Observable<any> {
+    console.log(`${this.base_url}income/update/${data.id}`, 'data', data)
+    return this.http.post<Income>(`${this.base_url}income/update/${data.id}`, data, {headers: {'Authorization': `Bearer ${this.access_token}`}});
   }
 
 }

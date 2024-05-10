@@ -29,6 +29,7 @@
     "@popperjs/core": "^2.11.8",
     "ag-grid-angular": "^31.2.1",
     "bootstrap": "^5.3.2",
+    "mat-table-exporter": "^15.0.0",
     "ngx-ui-loader": "^13.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

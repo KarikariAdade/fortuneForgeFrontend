@@ -1,31 +1,31 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavigationComponent} from "../../layouts/navigation/navigation.component";
 import {HomeHeaderComponent} from "../../layouts/home-header/home-header.component";
-import {Event, RouterLink} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {DatatableComponent} from "../../datatables/datatable/datatable.component";
-import {ActionButtonsComponent} from "../../layouts/action-buttons/action-buttons.component";
 import {IncomeCategory} from "../../interfaces/income-category";
 import {IncomeService} from "../../services/income/income.service";
 import {AuthService} from "../../services/auth.service";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgForOf, NgIf} from "@angular/common";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+import {faCloudDownloadAlt, faEdit, faPlusCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {Income} from "../../interfaces/income";
 import {DateService} from "../../services/date.service";
 import {ErrorMessageComponent} from "../../layouts/error-message/error-message.component";
-import {MatTable, MatTableDataSource, MatTableModule} from "@angular/material/table";
+import {MatTable, MatTableModule} from "@angular/material/table";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {MatButton} from "@angular/material/button";
 import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
-import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {MatPaginator} from "@angular/material/paginator";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {IncomeData} from "../../datatables/IncomeDatasource";
-import {IncomeDataDataSource, IncomeDataItem} from "../../income-data/income-data-datasource";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {SelectionModel} from "@angular/cdk/collections";
-
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatTableExporterModule} from "mat-table-exporter";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 
 @Component({
@@ -50,7 +50,11 @@ import {SelectionModel} from "@angular/cdk/collections";
     MatPaginator,
     MatProgressSpinner,
     MatLabel,
-    MatCheckbox
+    MatCheckbox,
+    MatTableExporterModule,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
   ],
   templateUrl: './income-tracker.component.html',
   styleUrl: './income-tracker.component.css'
@@ -59,13 +63,12 @@ import {SelectionModel} from "@angular/cdk/collections";
 
 export class IncomeTrackerComponent implements OnInit{
 
-
-
   constructor(
     private incomeService: IncomeService,
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    private dateService: DateService
+    private dateService: DateService,
+    private snackbar: MatSnackBar
   ) {
   }
 
@@ -92,6 +95,8 @@ export class IncomeTrackerComponent implements OnInit{
 
   addCategoryToggle: boolean = false;
 
+  addUpdateToggle: boolean = false;
+
   hasError = false;
 
   errorMessage: string = '';
@@ -100,10 +105,11 @@ export class IncomeTrackerComponent implements OnInit{
 
   highlightedRows:Income[] = []
 
-
-  displayedColumns:string[] = ['id', 'name', 'amount', 'startDate', 'endDate', 'recurring', 'incomeCategory'];
+  displayedColumns:string[] = ['id', 'name', 'amount', 'startDate', 'endDate', 'recurring', 'incomeCategory', 'action'];
   clickedRows = new Set<Income>();
   selection = new SelectionModel<Income>(true, []);
+
+  updateIncomeForm: FormGroup = new FormGroup({})
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -114,6 +120,7 @@ export class IncomeTrackerComponent implements OnInit{
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows() {
+
     if (this.isAllSelected()) {
 
       this.selection.clear();
@@ -134,9 +141,6 @@ export class IncomeTrackerComponent implements OnInit{
       }
 
     })
-
-    console.log(this.highlightedRows, 'all highlighted rows')
-
 
     this.selection.select(...this.dataSource.data);
   }
@@ -171,39 +175,32 @@ export class IncomeTrackerComponent implements OnInit{
       }
     }
 
-
-
-    console.log('showAllSelected', row, 'highlighted', this.highlightedRows)
   }
 
   addIncome() {
-    console.log(this.incomeAddForm.value);
 
-    // this.incomeService.addIncome(this.incomeAddForm.value).subscribe({
-    //   next: response => {
-    //     console.log(response,'success response')
-    //     this.hasError = true;
-    //     this.messageClass = 'alert alert-success';
-    //     this.errorMessage = response.message;
-    //
-    //     // this.onPushDataToRow(response.data)
-    //   },
-    //   error: errors => {
-    //     console.log(errors, 'error response')
-    //     this.hasError = true;
-    //
-    //     this.messageClass = 'alert alert-danger';
-    //
-    //     this.errorMessage = this.authService.getErrors(errors)
-    //   }
-    // })
+    this.incomeService.addIncome(this.incomeAddForm.value).subscribe({
+      next: response => {
+        this.hasError = true;
+        this.messageClass = 'alert alert-success';
+        this.errorMessage = response.message;
+        this.addNewData(response.data)
+      },
+      error: errors => {
+        this.hasError = true;
+
+        this.messageClass = 'alert alert-danger';
+
+        this.errorMessage = this.authService.getErrors(errors)
+      }
+    })
   }
 
 
   ngOnInit(): void {
-    this.addIncomeFormBuilder();
+    this.generateFormBuilder(this.incomeAddForm, null);
 
-    this.loadIncome()
+    this.loadIncome();
 
     this.loadIncomeCategories();
   }
@@ -211,41 +208,59 @@ export class IncomeTrackerComponent implements OnInit{
   private loadIncome() {
     this.incomeService.getIncome().subscribe({
       next: response => {
+
         this.incomes = response.data.map((data: Income) => {
           return {
             id: data.id,
             name: data.name,
             amount: data.amount,
-            startDate: data.startDate ? this.dateService.generateDate(new Date(data.startDate)) : null,
-            endDate: data.endDate ? this.dateService.generateDate(new Date(data.endDate)) : null,
+            startDate: data.startDate ? this.dateService.generateDate(new Date(data.startDate).toString(), false) : null,
+            endDate: data.endDate ? this.dateService.generateDate(new Date(data.endDate).toString(), false) : null,
             recurring: data.recurring,
             incomeCategory: data.incomeCategory?.name
           }
         })
-        console.log(this.incomes, 'income response');
 
         this.dataSource = new IncomeData(this.incomes)
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
         this.table.dataSource = this.dataSource;
-        console.log(this.dataSource, 'datasource', this.table.dataSource)
       },
       error: errors => {
+        this.snackbar.open('Error: Could not load resource. Kindly retry', 'Ok')
         console.log('income error', errors);
       }
     })
   }
 
-  private addIncomeFormBuilder() {
-    this.incomeAddForm = this.formBuilder.group({
-      'name': new FormControl('', [Validators.required]),
-      'amount': new FormControl('', [Validators.required, Validators.min(1)]),
-      'startDate': new FormControl('', [Validators.required]),
-      'endDate': new FormControl('', [Validators.required]),
-      'incomeCategory': new FormControl('', [Validators.required]),
-      'isRecurring': new FormControl(''),
-      'description': new FormControl(''),
-    })
+
+  public generateFormBuilder(formGroup: FormGroup, data:Income|null) {
+
+    formGroup.addControl('name', new FormControl('', [Validators.required]));
+    formGroup.addControl('id', new FormControl(''));
+    formGroup.addControl('amount', new FormControl('', [Validators.required, Validators.min(1)]));
+    formGroup.addControl('startDate', new FormControl('', [Validators.required]));
+    formGroup.addControl('endDate', new FormControl('', [Validators.required]));
+    formGroup.addControl('incomeCategory', new FormControl('', [Validators.required]));
+    formGroup.addControl('recurring', new FormControl('', [Validators.required]));
+    formGroup.addControl('description', new FormControl(''));
+
+    if(data != null) {
+
+      let category:IncomeCategory | undefined = this.incomeCategories.find(category => category.name === data.incomeCategory)
+
+      formGroup.patchValue({
+        'id': data.id,
+        'name': data.name,
+        'amount': data.amount,
+        'startDate': data.startDate ? this.dateService.generateDate(new Date(data.startDate).toString(), true) : null,
+        'endDate': data.endDate ? this.dateService.generateDate(new Date(data.endDate).toString(), true) : null,
+        'incomeCategory': category?.id,
+        'recurring': data.recurring ? 1 : 0,
+        'description': data.description,
+      } )
+
+    }
   }
 
   private loadIncomeCategories() {
@@ -264,30 +279,64 @@ export class IncomeTrackerComponent implements OnInit{
         }
       },
       error: errors => {
+        this.snackbar.open('Error: Could not load resource. Kindly retry', 'Ok')
         console.log('income error', errors);
       }
     })
   }
 
 
-  toggleForm(){
+  toggleAddIncomeForm(){
     this.addCategoryToggle = !this.addCategoryToggle
+    if (this.addUpdateToggle){
+      this.addUpdateToggle = false;
+    }
   }
 
-  addNewData() {
-    // @ts-ignore
-    const data = {
-      id: 33,
-      name: 'bizzle moore',
-      amount: 4444,
-      startDate: new Date('01-01-2021'),
-      endDate: new Date('01-01-2021'),
-      recurring: true,
+  toggleUpdateIncomeForm(){
+    this.addUpdateToggle = true;
+    if (this.addCategoryToggle){
+      this.addCategoryToggle = false;
     }
-    const newArray = [data, ...this.dataSource.data]
-    this.dataSource.data = newArray;
+  }
+
+  addNewData(data:Income) {
+
+    this.dataSource.data = [data, ...this.dataSource.data];
+
     console.log('data source data', this.dataSource.data)
+
     this.table.renderRows()
+
     this.ngOnInit()
+  }
+
+  protected readonly faTrash = faTrash;
+  protected readonly faEdit = faEdit;
+  protected readonly faCloudDownloadAlt = faCloudDownloadAlt;
+
+  generateEditData(row: Income) {
+    console.log('generate edit data', row)
+    this.toggleUpdateIncomeForm()
+    this.generateFormBuilder(this.updateIncomeForm, row)
+  }
+
+  updateIncome() {
+    this.incomeService.updateIncome(this.updateIncomeForm.value).subscribe({
+      next: response => {
+        console.log('update response', response)
+        this.hasError = true;
+        this.messageClass = 'alert alert-success';
+        this.errorMessage = response.message;
+        this.ngOnInit();
+      },
+      error: errors => {
+        this.hasError = true;
+
+        this.messageClass = 'alert alert-danger';
+
+        this.errorMessage = this.authService.getErrors(errors)
+      }
+    })
   }
 }

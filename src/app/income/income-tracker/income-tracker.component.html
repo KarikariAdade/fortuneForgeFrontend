@@ -5,7 +5,7 @@
     <div class="card card-page">
       <div class="card-body">
         <div class="mb-5" style="text-align: right;">
-          <button class="btn btn-primary shadow-lg" (click)="toggleForm()"><fa-icon [icon]="faPlusCircle"></fa-icon> Add Income</button>
+          <button class="btn btn-primary shadow-lg" (click)="toggleAddIncomeForm()"><fa-icon [icon]="faPlusCircle"></fa-icon> Add Income</button>
         </div>
         <div class="row mb-10" *ngIf="addCategoryToggle">
           <h2 class="text-center">Add Income</h2>
@@ -52,12 +52,12 @@
             </div>
             <div class="col-md-4 mb-5">
               <label>Is Recurring Income? <strong class="text-danger">*</strong></label>
-              <select class="form-control" formControlName="isRecurring">
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+              <select class="form-control" formControlName="recurring">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
               </select>
-              <div class="error mt-2" *ngIf="(incomeAddForm.controls['isRecurring'].touched || incomeAddForm.controls['isRecurring'].dirty) && incomeAddForm.controls['isRecurring'].errors as formErrors">
-                <strong class="text-danger" *ngIf="formErrors['required']">Income Name is required</strong><br>
+              <div class="error mt-2" *ngIf="(incomeAddForm.controls['recurring'].touched || incomeAddForm.controls['recurring'].dirty) && incomeAddForm.controls['recurring'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Recurring income field is required</strong><br>
               </div>
             </div>
             <div class="col-md-12 mt-5 text-center mb-5">
@@ -65,11 +65,86 @@
             </div>
           </form>
         </div>
+        <div class="row mb-10" *ngIf="addUpdateToggle">
+          <h2 class="text-center">Update Income</h2>
+          <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
+          <form class="row" method="POST" [formGroup]="updateIncomeForm" (submit)="updateIncome()">
+            <div class="col-md-4">
+              <label>Name <strong class="text-danger">*</strong></label>
+              <input type="text" formControlName="name" class="form-control">
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['name'].touched || updateIncomeForm.controls['name'].dirty) && updateIncomeForm.controls['name'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Name is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Amount <strong class="text-danger">*</strong></label>
+              <input type="number" step="0.01" formControlName="amount" class="form-control">
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['amount'].touched || updateIncomeForm.controls['amount'].dirty) && updateIncomeForm.controls['amount'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Amount is required</strong><br>
+                <strong class="text-danger" *ngIf="formErrors['min']">Amount too small</strong>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Income Category <strong class="text-danger">*</strong></label>
+              <select class="form-control" name="income_category" formControlName="incomeCategory">
+                <option value="">Select Income Category</option>
+                <option *ngFor="let category of incomeCategories" [value]="category.id">{{category.name}}</option>
+              </select>
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['incomeCategory'].touched || updateIncomeForm.controls['incomeCategory'].dirty) && updateIncomeForm.controls['incomeCategory'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Category is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Start Date <strong class="text-danger">*</strong></label>
+              <input type="date"  class="form-control" formControlName="startDate">
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['startDate'].touched || updateIncomeForm.controls['startDate'].dirty) && updateIncomeForm.controls['startDate'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Start Date is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>End Date <strong class="text-danger">*</strong></label>
+              <input type="date" class="form-control" formControlName="endDate">
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['endDate'].touched || updateIncomeForm.controls['endDate'].dirty) && updateIncomeForm.controls['endDate'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">End Date is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-4 mb-5">
+              <label>Is Recurring Income? <strong class="text-danger">*</strong></label>
+              <select class="form-control" formControlName="recurring">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+              <div class="error mt-2" *ngIf="(updateIncomeForm.controls['recurring'].touched || updateIncomeForm.controls['recurring'].dirty) && updateIncomeForm.controls['recurring'].errors as formErrors">
+                <strong class="text-danger" *ngIf="formErrors['required']">Income Name is required</strong><br>
+              </div>
+            </div>
+            <div class="col-md-12 mt-5 text-center mb-5">
+              <button [disabled]="!updateIncomeForm.valid" class="btn btn-success shadow-lg"><fa-icon [icon]="faPlusCircle"></fa-icon> Update Income </button>
+            </div>
+          </form>
+        </div>
 
-        <button class="btn btn-primary" >Show Selected</button>
-        <button class="btn btn-primary" (click)="addNewData()">Add New Data</button>
+        <div class="row mb-4">
+          <div class="col-md-5">
+            <button class="btn btn-info" [matMenuTriggerFor]="menu"><fa-icon [icon]="faCloudDownloadAlt"></fa-icon> Export</button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="exporter.exportTable('xlsx', {fileName:'test', sheet: 'sheet_name', Props: {Author: 'Karikari'}})">Excel</button>
+              <button mat-menu-item (click)="exporter.exportTable('csv')">Csv</button>
+              <button mat-menu-item (click)="exporter.exportTable('json')">Json</button>
+              <button mat-menu-item (click)="exporter.exportTable('txt')">Txt</button>
+            </mat-menu>
+          </div>
+          <div class="col-md-2"></div>
+          <div class="col-md-5" style="text-align: right;">
+            <button class="btn btn-primary" style="margin-right: 10px;">Show Selected</button>
+            <button class="btn btn-danger"> Delete Selected Entries</button>
+          </div>
+        </div>
+
+
+
         <div class="mat-elevation-z1">
-          <table mat-table class="full-width-table dataTable" matSort aria-label="Income">
+          <table mat-table matTableExporter #exporter="matTableExporter" class="full-width-table dataTable" matSort aria-label="Income">
 
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef>
@@ -110,12 +185,27 @@
 
             <ng-container matColumnDef="recurring">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Recurring</th>
-              <td mat-cell *matCellDef="let row">{{row.recurring}}</td>
+
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row.recurring">
+                  <mat-checkbox disabled checked></mat-checkbox>
+                </ng-container>
+                <ng-container *ngIf="!row.recurring">
+                  <mat-checkbox disabled></mat-checkbox>
+                </ng-container>
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="incomeCategory">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Income Category</th>
               <td mat-cell *matCellDef="let row">{{row.incomeCategory}}</td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef>Action</th>
+              <mat-cell *matCellDef="let row">
+                <button (click)="generateEditData(row)" class="btn btn-warning btn-sm" style="margin-right: 10px;"><fa-icon [icon]="faEdit" size="1x"></fa-icon></button>
+                <button class="btn btn-danger btn-sm"><fa-icon [icon]="faTrash"></fa-icon></button>
+              </mat-cell>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>

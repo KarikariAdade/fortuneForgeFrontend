@@ -13,6 +13,7 @@ import {
 } from "ngx-ui-loader";
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {JwtInterceptor} from "./interceptors/jwt.interceptor";
+import {MatTableExporterModule} from "mat-table-exporter";
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "red",
@@ -36,6 +37,8 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     NgxUiLoaderModule,
     HttpClientModule,
     NgxUiLoaderHttpModule,
+    MatTableExporterModule
+
     // NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
   ],
   providers:[HttpClient, JwtInterceptor]
