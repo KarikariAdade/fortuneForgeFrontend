@@ -21,3 +21,18 @@ textarea{
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+.demo-row-is-clicked {
+  font-weight: bold;
+}

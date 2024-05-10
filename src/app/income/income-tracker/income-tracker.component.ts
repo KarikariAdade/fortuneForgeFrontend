@@ -17,12 +17,14 @@ import {ErrorMessageComponent} from "../../layouts/error-message/error-message.c
 import {MatTable, MatTableDataSource, MatTableModule} from "@angular/material/table";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {MatButton} from "@angular/material/button";
-import {MatFormField} from "@angular/material/form-field";
+import {MatFormField, MatLabel} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {IncomeData} from "../../datatables/IncomeDatasource";
 import {IncomeDataDataSource, IncomeDataItem} from "../../income-data/income-data-datasource";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {SelectionModel} from "@angular/cdk/collections";
 
 
 
@@ -46,7 +48,9 @@ import {IncomeDataDataSource, IncomeDataItem} from "../../income-data/income-dat
     MatInput,
     MatSort,
     MatPaginator,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatLabel,
+    MatCheckbox
   ],
   templateUrl: './income-tracker.component.html',
   styleUrl: './income-tracker.component.css'
@@ -94,10 +98,83 @@ export class IncomeTrackerComponent implements OnInit{
 
   messageClass: string = '';
 
+  highlightedRows:Income[] = []
 
-  displayedColumns:string[] = ['id', 'name'];
+
+  displayedColumns:string[] = ['id', 'name', 'amount', 'startDate', 'endDate', 'recurring', 'incomeCategory'];
+  clickedRows = new Set<Income>();
+  selection = new SelectionModel<Income>(true, []);
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+
+      this.selection.clear();
+
+      this.highlightedRows = [];
+
+      return;
+    }
+
+    this.dataSource.data.forEach((row: Income) => {
+
+      const isRowHighlighted = this.highlightedRows.some((item:Income) => item.id === row.id)
+
+      if (!isRowHighlighted){
+
+        this.highlightedRows.push(row)
+
+      }
+
+    })
+
+    console.log(this.highlightedRows, 'all highlighted rows')
 
 
+    this.selection.select(...this.dataSource.data);
+  }
+
+  checkboxLabel(row?: Income): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  showAllSelected(row: Income, event:MouseEvent){
+    event.stopPropagation()
+
+    if (this.selection.isSelected(row)) {
+      const isRowHighlighted = this.highlightedRows.some((item:Income) => item.id === row.id)
+
+      if (!isRowHighlighted){
+
+        this.highlightedRows.push(row)
+
+      }
+
+    }else {
+
+      const selectedItem = this.highlightedRows.findIndex(item => row.id === item.id)
+
+      if (selectedItem !== -1) {
+
+        this.highlightedRows.splice(selectedItem, 1)
+
+      }
+    }
+
+
+
+    console.log('showAllSelected', row, 'highlighted', this.highlightedRows)
+  }
 
   addIncome() {
     console.log(this.incomeAddForm.value);
@@ -197,5 +274,20 @@ export class IncomeTrackerComponent implements OnInit{
     this.addCategoryToggle = !this.addCategoryToggle
   }
 
-
+  addNewData() {
+    // @ts-ignore
+    const data = {
+      id: 33,
+      name: 'bizzle moore',
+      amount: 4444,
+      startDate: new Date('01-01-2021'),
+      endDate: new Date('01-01-2021'),
+      recurring: true,
+    }
+    const newArray = [data, ...this.dataSource.data]
+    this.dataSource.data = newArray;
+    console.log('data source data', this.dataSource.data)
+    this.table.renderRows()
+    this.ngOnInit()
+  }
 }
