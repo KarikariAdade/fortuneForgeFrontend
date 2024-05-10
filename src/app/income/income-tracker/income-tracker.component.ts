@@ -106,7 +106,9 @@ export class IncomeTrackerComponent implements OnInit{
   highlightedRows:Income[] = []
 
   displayedColumns:string[] = ['id', 'name', 'amount', 'startDate', 'endDate', 'recurring', 'incomeCategory', 'action'];
+
   clickedRows = new Set<Income>();
+
   selection = new SelectionModel<Income>(true, []);
 
   updateIncomeForm: FormGroup = new FormGroup({})
@@ -181,17 +183,11 @@ export class IncomeTrackerComponent implements OnInit{
 
     this.incomeService.addIncome(this.incomeAddForm.value).subscribe({
       next: response => {
-        this.hasError = true;
-        this.messageClass = 'alert alert-success';
-        this.errorMessage = response.message;
+        this.generateSuccessResponse(response);
         this.addNewData(response.data)
       },
       error: errors => {
-        this.hasError = true;
-
-        this.messageClass = 'alert alert-danger';
-
-        this.errorMessage = this.authService.getErrors(errors)
+        this.generateFailureResponse(errors)
       }
     })
   }
@@ -228,7 +224,6 @@ export class IncomeTrackerComponent implements OnInit{
       },
       error: errors => {
         this.snackbar.open('Error: Could not load resource. Kindly retry', 'Ok')
-        console.log('income error', errors);
       }
     })
   }
@@ -316,7 +311,6 @@ export class IncomeTrackerComponent implements OnInit{
   protected readonly faCloudDownloadAlt = faCloudDownloadAlt;
 
   generateEditData(row: Income) {
-    console.log('generate edit data', row)
     this.toggleUpdateIncomeForm()
     this.generateFormBuilder(this.updateIncomeForm, row)
   }
@@ -325,18 +319,44 @@ export class IncomeTrackerComponent implements OnInit{
     this.incomeService.updateIncome(this.updateIncomeForm.value).subscribe({
       next: response => {
         console.log('update response', response)
-        this.hasError = true;
-        this.messageClass = 'alert alert-success';
-        this.errorMessage = response.message;
+        this.generateSuccessResponse(response);
         this.ngOnInit();
       },
       error: errors => {
-        this.hasError = true;
-
-        this.messageClass = 'alert alert-danger';
-
-        this.errorMessage = this.authService.getErrors(errors)
+        this.generateFailureResponse(errors);
       }
     })
+  }
+
+  private generateFailureResponse(errors:any) {
+    this.hasError = true;
+
+    this.messageClass = 'alert alert-danger';
+
+    this.errorMessage = this.authService.getErrors(errors)
+  }
+
+  private generateSuccessResponse(response: any) {
+    this.hasError = true;
+    this.messageClass = 'alert alert-success';
+    this.errorMessage = response.message;
+  }
+
+  deleteIncome(data: Income) {
+    console.log('income data delete', data)
+    this.incomeService.deleteIncome(data).subscribe({
+      next: response => {
+        this.generateSuccessResponse(response)
+        console.log('response', response)
+        this.ngOnInit()
+      },
+      error: errors => {
+        this.generateFailureResponse(errors)
+      }
+    })
+  }
+
+  deleteSelectedIncomes() {
+    console.log(this.highlightedRows)
   }
 }

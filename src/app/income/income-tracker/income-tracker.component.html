@@ -7,9 +7,10 @@
         <div class="mb-5" style="text-align: right;">
           <button class="btn btn-primary shadow-lg" (click)="toggleAddIncomeForm()"><fa-icon [icon]="faPlusCircle"></fa-icon> Add Income</button>
         </div>
+        <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
         <div class="row mb-10" *ngIf="addCategoryToggle">
           <h2 class="text-center">Add Income</h2>
-          <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
+
           <form class="row" method="POST" [formGroup]="incomeAddForm" (submit)="addIncome()">
             <div class="col-md-4">
               <label>Name <strong class="text-danger">*</strong></label>
@@ -67,7 +68,6 @@
         </div>
         <div class="row mb-10" *ngIf="addUpdateToggle">
           <h2 class="text-center">Update Income</h2>
-          <app-error-message [messageClass]="messageClass" [hasError]="hasError" [errorMessage]="errorMessage"></app-error-message>
           <form class="row" method="POST" [formGroup]="updateIncomeForm" (submit)="updateIncome()">
             <div class="col-md-4">
               <label>Name <strong class="text-danger">*</strong></label>
@@ -137,7 +137,7 @@
           <div class="col-md-2"></div>
           <div class="col-md-5" style="text-align: right;">
             <button class="btn btn-primary" style="margin-right: 10px;">Show Selected</button>
-            <button class="btn btn-danger"> Delete Selected Entries</button>
+            <button class="btn btn-danger" (click)="deleteSelectedIncomes()"> Delete Selected Entries</button>
           </div>
         </div>
 
@@ -204,17 +204,17 @@
               <th mat-header-cell *matHeaderCellDef>Action</th>
               <mat-cell *matCellDef="let row">
                 <button (click)="generateEditData(row)" class="btn btn-warning btn-sm" style="margin-right: 10px;"><fa-icon [icon]="faEdit" size="1x"></fa-icon></button>
-                <button class="btn btn-danger btn-sm"><fa-icon [icon]="faTrash"></fa-icon></button>
+                <button class="btn btn-danger btn-sm" (click)="deleteIncome(row)" ><fa-icon [icon]="faTrash"></fa-icon></button>
               </mat-cell>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
-            <tr mat-row (click)="clickedRows.add(row); selection.toggle(row)"
-                [class.demo-row-is-clicked]="clickedRows.has(row)"  *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row
+                *matRowDef="let row; columns: displayedColumns;"></tr>
 
             <!-- Row shown when there is no matching data. -->
             <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="4">No data matching the filter</td>
+              <td class="mat-cell p-4 text-center">No income records created</td>
             </tr>
           </table>
 
@@ -226,21 +226,7 @@
                          aria-label="Select page">
           </mat-paginator>
 
-          <div>
-            <h3>
-              Click Log
-            </h3>
-          </div>
 
-          @if (!clickedRows.size) {
-            <div>Clicked rows will be logged here</div>
-          }
-
-          <ul>
-            @for (clickedRow of clickedRows; track clickedRow) {
-              <li>Clicked on {{clickedRow.name}}</li>
-            }
-          </ul>
         </div>
       </div>
     </div>

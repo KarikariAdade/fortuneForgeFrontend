@@ -48,4 +48,10 @@ export class IncomeService {
     return this.http.post<Income>(`${this.base_url}income/update/${data.id}`, data, {headers: {'Authorization': `Bearer ${this.access_token}`}});
   }
 
+  deleteIncome(data: Income): Observable<any> {
+    return this.http.post<Income>(`${this.base_url}income/delete/${data.id}`, {headers: {'Authorization': `Bearer ${this.access_token}`}});
+  }
+
+
+
 }
