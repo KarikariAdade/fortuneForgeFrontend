@@ -13,7 +13,6 @@ import {AuthGuard} from "./guards/auth.guard";
 import {PasswordForgotComponent} from "./auth/password-forgot/password-forgot.component";
 import {PasswordResetComponent} from "./auth/password-reset/password-reset.component";
 import {IncomeTrackerCategoriesComponent} from "./income/categories/income-tracker-categories.component";
-import {IncomeDataComponent} from "./income-data/income-data.component";
 
 export const routes: Routes = [
   {path: 'auth', children: [
@@ -27,7 +26,6 @@ export const routes: Routes = [
   {path: 'expenses', component: ExpenseComponent, canActivate:[AuthGuard]},
   {path: 'income', children: [
       {path: '', component: IncomeTrackerComponent},
-      {path: 'table', component: IncomeDataComponent},
       {path: 'categories', component: IncomeTrackerCategoriesComponent}
     ], canActivate:[AuthGuard]},
   {path: 'reminders', component: ReminderComponent, canActivate:[AuthGuard]},

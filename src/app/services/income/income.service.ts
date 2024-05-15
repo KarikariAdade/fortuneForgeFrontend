@@ -49,9 +49,13 @@ export class IncomeService {
   }
 
   deleteIncome(data: Income): Observable<any> {
-    return this.http.post<Income>(`${this.base_url}income/delete/${data.id}`, {headers: {'Authorization': `Bearer ${this.access_token}`}});
+    return this.http.post<Income>(`${this.base_url}income/delete/${data.id}`, data,{headers: {'Authorization': `Bearer ${this.access_token}`}});
   }
 
+  bulkDelete(data: Income[]):Observable<any> {
+    console.log(typeof(data))
+    return this.http.post<Income[]>(`${this.base_url}income/delete/bulk`, data, {headers: {'Authorization': `Bearer ${this.access_token}`}})
+  }
 
 
 }

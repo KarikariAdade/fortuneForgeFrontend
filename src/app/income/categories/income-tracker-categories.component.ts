@@ -1,18 +1,34 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NavigationComponent} from "../../layouts/navigation/navigation.component";
 import {HomeHeaderComponent} from "../../layouts/home-header/home-header.component";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
-import {faCloudDownloadAlt, faPlusCircle} from "@fortawesome/free-solid-svg-icons";
+import {faCloudDownloadAlt, faEdit, faPlusCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {NgIf} from "@angular/common";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
 import { AgGridAngular } from 'ag-grid-angular'; // AG Grid Component
-import { ColDef, CsvExportModule, GridApi, GridReadyEvent, GridOptions, GetRowIdParams, GetRowIdFunc } from 'ag-grid-community';
 import {IncomeService} from "../../services/income/income.service";
-import {User} from "../../interfaces/user";
-import {IncomeCategory} from "../../interfaces/income-category";
-import {ActionButtonsComponent} from "../../layouts/action-buttons/action-buttons.component";
 import {ErrorMessageComponent} from "../../layouts/error-message/error-message.component";
+import {MatPaginator} from "@angular/material/paginator";
+import {MatSort, MatSortHeader} from "@angular/material/sort";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef, MatNoDataRow, MatRow, MatRowDef,
+  MatTable
+} from "@angular/material/table";
+import {Income} from "../../interfaces/income";
+import {IncomeData} from "../../datatables/IncomeDatasource";
+import {IncomeCategoryDatasource} from "../../datatables/IncomeCategoryDatasource";
+import {IncomeCategory} from "../../interfaces/income-category";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {MatTableExporterModule} from "mat-table-exporter";
+import {SelectionModel} from "@angular/cdk/collections";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 
 @Component({
@@ -26,6 +42,25 @@ import {ErrorMessageComponent} from "../../layouts/error-message/error-message.c
     ReactiveFormsModule,
     AgGridAngular,
     ErrorMessageComponent,
+    MatCell,
+    MatCellDef,
+    MatCheckbox,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatPaginator,
+    MatRow,
+    MatRowDef,
+    MatSort,
+    MatSortHeader,
+    MatTable,
+    MatTableExporterModule,
+    MatHeaderCellDef,
+    MatNoDataRow,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
   ],
   templateUrl: './income-tracker-categories.component.html',
   styleUrl: './income-tracker-categories.component.css'
@@ -33,8 +68,20 @@ import {ErrorMessageComponent} from "../../layouts/error-message/error-message.c
 
 export class IncomeTrackerCategoriesComponent implements OnInit {
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private incomeService: IncomeService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private incomeService: IncomeService,
+    private snackbar: MatSnackBar
+  ) {
   }
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatTable) table!: MatTable<IncomeCategory>;
+
+  incomeCategories:IncomeCategory[] = [];
+
+  dataSource: IncomeCategoryDatasource = new IncomeCategoryDatasource(this.incomeCategories);
 
   incomeLink: string = '/income';
 
@@ -50,35 +97,18 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
 
   messageClass: string = '';
 
-  private gridApi!: GridApi;
-
   protected readonly faPlusCircle = faPlusCircle;
 
   applyMarginTop: string = '';
 
-  userData: User = JSON.parse(`${this.authService.getUserData()}`);
+  protected readonly faCloudDownloadAlt = faCloudDownloadAlt;
 
   addIncomeCategoryForm: FormGroup = new FormGroup({});
 
-  public rowSelection: "single" | "multiple" = "multiple";
+  displayedColumns:string[] = ['id', 'name', 'description'];
 
-  public getRowId: GetRowIdFunc = (params: GetRowIdParams) => {
-    return params.data.id;
-  };
-
-  rowStyle = {width: '1180px'}
-
-  rowData: any[] = [
-
-  ];
-
-  public colDefs: ColDef[] = [
-    { field: "id", hide: true, sortable: true},
-    { field: "name", resizable: true, sortable: true},
-    { field: "description", resizable: true , sortable: true},
-    { field: "action", resizable: true, cellRenderer: ActionButtonsComponent },
-  ];
-
+  highlightedRows:IncomeCategory[] = []
+  selection = new SelectionModel<IncomeCategory>(true, []);
 
   ngOnInit(): void {
 
@@ -89,23 +119,23 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
 
     this.incomeService.getUserCategories().subscribe({
       next: response => {
-        console.log('category response', response);
-
-        if (response.data && Object.keys(response.data).length !== 0) {
-
-          this.rowData = response.data.map((category: IncomeCategory) => {
+        if (Object.keys(response.data).length > 0) {
+          this.incomeCategories = response.data.map((category: IncomeCategory) => {
             return {
               name: category.name,
               description: category.description,
               id: category.id
-
             }
           })
-
+          this.dataSource = new IncomeCategoryDatasource(this.incomeCategories)
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+          this.table.dataSource = this.dataSource;
         }
+
       },
       error: errors => {
-        console.log('category error', errors);
+        this.snackbar.open('Error: Could not load resource. Kindly retry', 'Ok')
       }
     })
 
@@ -116,64 +146,17 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
     this.addCategoryToggle = !this.addCategoryToggle
   }
 
-  onGridReady(params: GridReadyEvent<IncomeCategory>) {
-    console.log('GridReady', params);
 
-    this.gridApi = params.api;
-  }
-
-
-  onBtnExport() {
-    this.gridApi.exportDataAsCsv();
-  }
-
-  rowDataB: any =
-    {
-      name: 'category name',
-      description: 'category.description',
-      id: 33
-
-    }
-
-    // adds new row to the rows
-
-  pushDataToRow() {
-    const newData = this.rowData.slice();
-    newData.splice(0, 0, this.rowDataB)
-    // this.rowData.push(this.rowDataB)));
-
-    this.gridApi.setGridOption("rowData", newData);
-  }
-
-  deleteDataFromRow(){
-    const selectedRowNodes = this.gridApi.getSelectedNodes()
-    console.log(selectedRowNodes, 'selected nodes')
-    const selectedIDs = selectedRowNodes.map(function (rowNode){
-      console.log('row nod id', rowNode)
-      return rowNode.data.id;
-    })
-
-    console.log('rowdata before filter', this.rowData.length)
-
-    this.rowData = this.rowData.filter( dataItem => !selectedIDs.includes(dataItem.id))
-    console.log('rowdata after filter', this.rowData.length, this.rowData)
-
-    this.gridApi.setGridOption("rowData", this.rowData);
-  }
-
-  protected readonly faCloudDownloadAlt = faCloudDownloadAlt;
 
 
   submitIncomeCategoryForm() {
     this.incomeService.addIncomeCategory(this.addIncomeCategoryForm.value).subscribe({
       next: data => {
-        console.log('income category success fresponse', data)
         this.hasError = true;
         this.messageClass = 'alert alert-success';
         this.errorMessage = data.message;
       },
       error: errors => {
-        console.log('income category error response', errors)
         this.hasError = true;
 
         this.messageClass = 'alert alert-danger';
@@ -182,5 +165,83 @@ export class IncomeTrackerCategoriesComponent implements OnInit {
       }
     })
     console.log(this.addIncomeCategoryForm.value)
+  }
+
+  protected readonly faEdit = faEdit;
+  protected readonly faTrash = faTrash;
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+
+    if (this.isAllSelected()) {
+
+      this.selection.clear();
+
+      this.highlightedRows = [];
+
+      return;
+    }
+
+    this.dataSource.data.forEach((row: IncomeCategory) => {
+
+      const isRowHighlighted = this.highlightedRows.some((item:IncomeCategory) => item.id === row.id)
+
+      if (!isRowHighlighted){
+
+        this.highlightedRows.push({
+          id: row.id,
+          name: row.name,
+          description: row.description,
+        })
+
+      }
+
+    })
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+
+  checkboxLabel(row?: IncomeCategory): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+  showAllSelected(row: IncomeCategory, event:MouseEvent){
+    event.stopPropagation()
+
+    if (this.selection.isSelected(row)) {
+      const isRowHighlighted = this.highlightedRows.some((item:IncomeCategory) => item.id === row.id)
+
+      if (!isRowHighlighted){
+
+        this.highlightedRows.push({
+          id: row.id,
+          name: row.name,
+          description: row.description,
+        })
+
+      }
+
+    }else {
+
+      const selectedItem = this.highlightedRows.findIndex(item => row.id === item.id)
+
+      if (selectedItem !== -1) {
+
+        this.highlightedRows.splice(selectedItem, 1)
+
+      }
+    }
+
   }
 }

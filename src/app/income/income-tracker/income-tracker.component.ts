@@ -107,8 +107,6 @@ export class IncomeTrackerComponent implements OnInit{
 
   displayedColumns:string[] = ['id', 'name', 'amount', 'startDate', 'endDate', 'recurring', 'incomeCategory', 'action'];
 
-  clickedRows = new Set<Income>();
-
   selection = new SelectionModel<Income>(true, []);
 
   updateIncomeForm: FormGroup = new FormGroup({})
@@ -138,7 +136,14 @@ export class IncomeTrackerComponent implements OnInit{
 
       if (!isRowHighlighted){
 
-        this.highlightedRows.push(row)
+        this.highlightedRows.push({
+          id: row.id,
+          name: row.name,
+          description: row.description,
+          recurring: row.recurring,
+          amount: row.amount,
+          incomeCategory: row.incomeCategory,
+        })
 
       }
 
@@ -162,7 +167,14 @@ export class IncomeTrackerComponent implements OnInit{
 
       if (!isRowHighlighted){
 
-        this.highlightedRows.push(row)
+        this.highlightedRows.push({
+          id: row.id,
+          name: row.name,
+          description: row.description,
+          recurring: row.recurring,
+          amount: row.amount,
+          incomeCategory: row.incomeCategory,
+        })
 
       }
 
@@ -358,5 +370,18 @@ export class IncomeTrackerComponent implements OnInit{
 
   deleteSelectedIncomes() {
     console.log(this.highlightedRows)
+
+    this.incomeService.bulkDelete(this.highlightedRows).subscribe({
+      next: response => {
+        console.log(response)
+        this.highlightedRows = [];
+        this.generateSuccessResponse(response)
+        this.ngOnInit()
+      },
+      error: errors => {
+        console.log(errors)
+        this.generateFailureResponse(errors)
+      }
+    })
   }
 }

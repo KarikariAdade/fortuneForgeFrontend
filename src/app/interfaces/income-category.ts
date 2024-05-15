@@ -1,6 +1,6 @@
 export interface IncomeCategory {
 
-  id?: number;
+  id: number;
 
   name?: string;
 
